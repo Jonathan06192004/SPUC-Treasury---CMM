@@ -157,6 +157,57 @@ function renderTables() {
       <td class="${pctClass}">${variancePct >= 0 ? '' : '('}${Math.abs(variancePct)}%${variancePct >= 0 ? '' : ')'}</td>
     </tr>`;
   }).join('');
+
+  // Populate tfoot — Tithes
+  const titheVals = Object.values(districtTithes);
+  const t26 = titheVals.reduce((s, d) => s + d.y2026, 0);
+  const t25 = titheVals.reduce((s, d) => s + d.y2025, 0);
+  const tVar = t26 - t25;
+  const tPct = t25 > 0 ? ((tVar / t25) * 100).toFixed(0) : 0;
+  const totalChurches = titheVals.reduce((s, d) => s + d.churches, 0);
+  setFooterCell('tfTitheChurch26', t26, false);
+  setFooterCell('tfTitheChurch25', t25, false);
+  setFooterCell('tfTitheChurchVar', tVar, true);
+  setFooterPct('tfTitheChurchPct', tPct);
+  setFooterCell('tfTitheTotal26', t26, false);
+  setFooterCell('tfTitheTotal25', t25, false);
+  setFooterCell('tfTitheTotalVar', tVar, true);
+  setFooterPct('tfTitheTotalPct', tPct);
+  document.getElementById('tfTitheChurchCount').textContent = totalChurches;
+
+  // Populate tfoot — Offerings
+  const offerVals = Object.values(districtOfferings);
+  const o26 = offerVals.reduce((s, d) => s + d.y2026, 0);
+  const o25 = offerVals.reduce((s, d) => s + d.y2025, 0);
+  const oVar = o26 - o25;
+  const oPct = o25 > 0 ? ((oVar / o25) * 100).toFixed(0) : 0;
+  setFooterCell('tfOfferChurch26', o26, false);
+  setFooterCell('tfOfferChurch25', o25, false);
+  setFooterCell('tfOfferChurchVar', oVar, true);
+  setFooterPct('tfOfferChurchPct', oPct);
+  setFooterCell('tfOfferTotal26', o26, false);
+  setFooterCell('tfOfferTotal25', o25, false);
+  setFooterCell('tfOfferTotalVar', oVar, true);
+  setFooterPct('tfOfferTotalPct', oPct);
+}
+
+function setFooterCell(id, value, isVariance) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const cls = value >= 0 ? 'pos' : 'neg';
+  el.className = isVariance ? cls : '';
+  if (isVariance) {
+    el.textContent = value >= 0 ? currency.format(value) : `(${currency.format(Math.abs(value))})`;
+  } else {
+    el.textContent = currency.format(value);
+  }
+}
+
+function setFooterPct(id, pct) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.className = pct >= 0 ? 'pos' : 'neg';
+  el.textContent = pct >= 0 ? `${pct}%` : `(${Math.abs(pct)}%)`;
 }
 
 function setTableTab(tab) {
